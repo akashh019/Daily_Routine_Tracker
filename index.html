@@ -3,6 +3,7 @@
 <head>
   <title>Daily GRE Routine</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
@@ -44,22 +45,16 @@
       background: #f9fafb;
       border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .task:hover {
-      background: #eef2f7;
     }
 
     .task.completed {
       background: #e6f4ea;
       text-decoration: line-through;
-      color: #555;
     }
 
     input[type="checkbox"] {
-      transform: scale(1.2);
       pointer-events: none;
+      transform: scale(1.2);
     }
 
     button {
@@ -72,10 +67,6 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-    }
-
-    canvas {
-      margin-top: 25px;
     }
   </style>
 </head>
@@ -95,26 +86,29 @@
 </div>
 
 <script>
-const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+/* 🔴 VERY IMPORTANT: PUT YOUR WEB APP URL HERE */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpIzS3T2qtt-MpxdcJFoJ_KqsMAW4yqRcRLQ7QUuNwk9mfQATc7gnOZVU7fjPX3aztVg/exec";
 
-/* ===== DAILY THOUGHT LOGIC ===== */
+/* ===== DAILY THOUGHT ===== */
 const thoughts = [
   "Choose the harder right over the easier wrong, and never let your wishbone grow where a backbone should be.",
   "You can go from failure to success, but you can't go from excuses to success."
 ];
+document.getElementById("thoughtBox").innerText =
+  thoughts[new Date().getDate() % 2];
 
-const today = new Date().getDate();
-document.getElementById("thoughtBox").innerText = thoughts[today % 2];
-
-/* ===== TASKS ===== */
+/* ===== TASK LIST ===== */
 const tasks = [
   ["Wake up at 5:00 AM","Morning",0],
-  ["Quant practice – 1 hour","Morning",60],
-  ["Verbal practice – 1 hour","Morning",60],
+  ["Quant – Concept study","Morning",20],
+  ["Quant – Practice questions","Morning",40],
+  ["Verbal practice – questions","Morning",60],
   ["Verbal Mountain (Bus)","Bus",30],
   ["Quant Mountain (Bus)","Bus",30],
-  ["Vocabulary / Quant – 10 words","Daily",20],
-  ["Quant (Concept + Video + Practice)","Night",90],
+  ["Vocabulary – 10 new words","Daily",20],
+  ["Quant – Concept revision","Night",20],
+  ["Quant – Video","Night",45],
+  ["Quant – Practice","Night",25],
   ["Vocabulary Video","Night",60],
   ["Text Completion – 6 Q","Night",15],
   ["Sentence Equivalence – 6 Q","Night",15]
@@ -123,48 +117,48 @@ const tasks = [
 const container = document.getElementById("tasks");
 
 /* ===== RENDER TASKS ===== */
-tasks.forEach((t,i)=>{
+tasks.forEach((t, i) => {
   const div = document.createElement("div");
   div.className = "task";
-  div.innerHTML = `<input type="checkbox" id="t${i}"> <span>${t[0]}</span>`;
-
+  div.innerHTML = `<input type="checkbox" id="t${i}"> ${t[0]}`;
   div.onclick = () => toggleTask(i, div);
   container.appendChild(div);
 });
 
 /* ===== PIE CHART ===== */
-const ctx = document.getElementById("progressChart");
-const chart = new Chart(ctx, {
-  type: "pie",
-  data: {
-    labels: ["Completed", "Remaining"],
-    datasets: [{
-      data: [0, tasks.length],
-      backgroundColor: ["#4CAF50", "#ddd"]
-    }]
+const chart = new Chart(
+  document.getElementById("progressChart"), {
+    type: "pie",
+    data: {
+      labels: ["Completed", "Remaining"],
+      datasets: [{
+        data: [0, tasks.length],
+        backgroundColor: ["#4CAF50", "#ddd"]
+      }]
+    }
   }
-});
+);
 
 function updateChart() {
-  const completed = document.querySelectorAll(".task.completed").length;
-  chart.data.datasets[0].data = [completed, tasks.length - completed];
+  const done = document.querySelectorAll(".task.completed").length;
+  chart.data.datasets[0].data = [done, tasks.length - done];
   chart.update();
 }
 
-/* ===== TASK TOGGLE ===== */
+/* ===== TOGGLE TASK ===== */
 function toggleTask(i, div) {
-  const checkbox = document.getElementById("t"+i);
-  checkbox.checked = !checkbox.checked;
+  const cb = document.getElementById("t" + i);
+  cb.checked = !cb.checked;
   div.classList.toggle("completed");
   updateChart();
 }
 
-/* ===== SUBMIT ===== */
+/* ===== SUBMIT DATA (THIS IS THE FIXED PART) ===== */
 function submitData() {
   const payload = {
     date: new Date().toISOString().split("T")[0],
-    day: new Date().toLocaleDateString("en-IN",{weekday:"long"}),
-    tasks: tasks.map((t,i)=>({
+    day: new Date().toLocaleDateString("en-IN",{ weekday:"long" }),
+    tasks: tasks.map((t,i) => ({
       task: t[0],
       timeSlot: t[1],
       duration: t[2],
@@ -174,10 +168,14 @@ function submitData() {
 
   fetch(SCRIPT_URL, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(payload)
   })
+  .then(res => res.text())
   .then(() => alert("Routine submitted successfully ✅"))
-  .catch(() => alert("Submission failed ❌"));
+  .catch(err => alert("Submission failed ❌"));
 }
 </script>
 
