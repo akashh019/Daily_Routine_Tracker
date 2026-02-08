@@ -87,7 +87,7 @@
 
 <script>
 /* 🔴 VERY IMPORTANT: PUT YOUR WEB APP URL HERE */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpIzS3T2qtt-MpxdcJFoJ_KqsMAW4yqRcRLQ7QUuNwk9mfQATc7gnOZVU7fjPX3aztVg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLDqJHlzjJ7yqDtXY_3U4jrGeZuPKuB_1aWVicUfAA0yMqCmTVOd4FzYWbEyRxRUKo/exec";
 
 /* ===== DAILY THOUGHT ===== */
 const thoughts = [
@@ -167,18 +167,23 @@ function submitData() {
     }))
   };
 
+  const formBody = new URLSearchParams();
+  formBody.append("date", payload.date);
+  formBody.append("day", payload.day);
+  formBody.append("tasks", JSON.stringify(payload.tasks));
+
   fetch(SCRIPT_URL, {
     method: "POST",
-    mode: "no-cors",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: JSON.stringify(payload)
-  });
-
-  alert("Routine submitted successfully ✅");
+    body: formBody.toString()
+  })
+  .then(() => alert("Routine submitted successfully ✅"))
+  .catch(() => alert("Submission failed ❌"));
 }
 </script>
+
 
 
   fetch(SCRIPT_URL, {
