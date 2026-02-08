@@ -154,17 +154,32 @@ function toggleTask(i, div) {
 }
 
 /* ===== SUBMIT DATA (THIS IS THE FIXED PART) ===== */
+<script>
 function submitData() {
   const payload = {
     date: new Date().toISOString().split("T")[0],
     day: new Date().toLocaleDateString("en-IN",{ weekday:"long" }),
-    tasks: tasks.map((t,i) => ({
+    tasks: tasks.map((t,i)=>({
       task: t[0],
       timeSlot: t[1],
       duration: t[2],
       completed: document.getElementById("t"+i).checked
     }))
   };
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  alert("Routine submitted successfully ✅");
+}
+</script>
+
 
   fetch(SCRIPT_URL, {
     method: "POST",
