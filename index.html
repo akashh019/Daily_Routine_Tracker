@@ -172,15 +172,13 @@ function submitData() {
   formBody.append("day", payload.day);
   formBody.append("tasks", JSON.stringify(payload.tasks));
 
+  // 🔥 NO headers, NO then/catch, NO response reading
   fetch(SCRIPT_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: formBody.toString()
-  })
-  .then(() => alert("Routine submitted successfully ✅"))
-  .catch(() => alert("Submission failed ❌"));
+    body: formBody
+  });
+
+  alert("Routine submitted successfully ✅");
 }
 </script>
 
