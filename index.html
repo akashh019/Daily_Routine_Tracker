@@ -184,18 +184,6 @@ function submitData() {
 
 
 
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.text())
-  .then(() => alert("Routine submitted successfully ✅"))
-  .catch(err => alert("Submission failed ❌"));
-}
-</script>
 
 </body>
 </html>
