@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Daily GRE Routine</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #eef2f3, #d9e2ec);
+      display: flex;
+      justify-content: center;
+      padding: 40px 0;
+    }
+
+    .app {
+      background: #ffffff;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .thought {
+      background: #f5f7fa;
+      padding: 12px 16px;
+      border-left: 4px solid #4CAF50;
+      border-radius: 8px;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #f9fafb;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .task:hover {
+      background: #eef2f7;
+    }
+
+    .task.completed {
+      background: #e6f4ea;
+      text-decoration: line-through;
+      color: #555;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      pointer-events: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      background: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    canvas {
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+  <h2>Daily GRE Routine</h2>
+
+  <div class="thought" id="thoughtBox"></div>
+
+  <div id="tasks"></div>
+
+  <button onclick="submitData()">Submit Routine</button>
+
+  <canvas id="progressChart"></canvas>
+</div>
+
+<script>
+const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+
+/* ===== DAILY THOUGHT LOGIC ===== */
+const thoughts = [
+  "Choose the harder right over the easier wrong, and never let your wishbone grow where a backbone should be.",
+  "You can go from failure to success, but you can't go from excuses to success."
+];
+
+const today = new Date().getDate();
+document.getElementById("thoughtBox").innerText = thoughts[today % 2];
+
+/* ===== TASKS ===== */
+const tasks = [
+  ["Wake up at 5:00 AM","Morning",0],
+  ["Quant practice – 1 hour","Morning",60],
+  ["Verbal practice – 1 hour","Morning",60],
+  ["Verbal Mountain (Bus)","Bus",30],
+  ["Quant Mountain (Bus)","Bus",30],
+  ["Vocabulary / Quant – 10 words","Daily",20],
+  ["Quant (Concept + Video + Practice)","Night",90],
+  ["Vocabulary Video","Night",60],
+  ["Text Completion – 6 Q","Night",15],
+  ["Sentence Equivalence – 6 Q","Night",15]
+];
+
+const container = document.getElementById("tasks");
+
+/* ===== RENDER TASKS ===== */
+tasks.forEach((t,i)=>{
+  const div = document.createElement("div");
+  div.className = "task";
+  div.innerHTML = `<input type="checkbox" id="t${i}"> <span>${t[0]}</span>`;
+
+  div.onclick = () => toggleTask(i, div);
+  container.appendChild(div);
+});
+
+/* ===== PIE CHART ===== */
+const ctx = document.getElementById("progressChart");
+const chart = new Chart(ctx, {
+  type: "pie",
+  data: {
+    labels: ["Completed", "Remaining"],
+    datasets: [{
+      data: [0, tasks.length],
+      backgroundColor: ["#4CAF50", "#ddd"]
+    }]
+  }
+});
+
+function updateChart() {
+  const completed = document.querySelectorAll(".task.completed").length;
+  chart.data.datasets[0].data = [completed, tasks.length - completed];
+  chart.update();
+}
+
+/* ===== TASK TOGGLE ===== */
+function toggleTask(i, div) {
+  const checkbox = document.getElementById("t"+i);
+  checkbox.checked = !checkbox.checked;
+  div.classList.toggle("completed");
+  updateChart();
+}
+
+/* ===== SUBMIT ===== */
+function submitData() {
+  const payload = {
+    date: new Date().toISOString().split("T")[0],
+    day: new Date().toLocaleDateString("en-IN",{weekday:"long"}),
+    tasks: tasks.map((t,i)=>({
+      task: t[0],
+      timeSlot: t[1],
+      duration: t[2],
+      completed: document.getElementById("t"+i).checked
+    }))
+  };
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
+  .then(() => alert("Routine submitted successfully ✅"))
+  .catch(() => alert("Submission failed ❌"));
+}
+</script>
+
+</body>
+</html>
