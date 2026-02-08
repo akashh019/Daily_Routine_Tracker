@@ -86,8 +86,9 @@
 </div>
 
 <script>
-/* 🔴 VERY IMPORTANT: PUT YOUR WEB APP URL HERE */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLDqJHlzjJ7yqDtXY_3U4jrGeZuPKuB_1aWVicUfAA0yMqCmTVOd4FzYWbEyRxRUKo/exec";
+/* 🔴 PUT YOUR WEB APP URL HERE */
+const SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbzLDqJHlzjJ7yqDtXY_3U4jrGeZuPKuB_1aWVicUfAA0yMqCmTVOd4FzYWbEyRxRUKo/exec";
 
 /* ===== DAILY THOUGHT ===== */
 const thoughts = [
@@ -153,8 +154,7 @@ function toggleTask(i, div) {
   updateChart();
 }
 
-/* ===== SUBMIT DATA (THIS IS THE FIXED PART) ===== */
-<script>
+/* ===== SUBMIT DATA (FINAL & WORKING) ===== */
 function submitData() {
   const payload = {
     date: new Date().toISOString().split("T")[0],
@@ -172,7 +172,6 @@ function submitData() {
   formBody.append("day", payload.day);
   formBody.append("tasks", JSON.stringify(payload.tasks));
 
-  // 🔥 NO headers, NO then/catch, NO response reading
   fetch(SCRIPT_URL, {
     method: "POST",
     body: formBody
@@ -181,9 +180,6 @@ function submitData() {
   alert("Routine submitted successfully ✅");
 }
 </script>
-
-
-
 
 </body>
 </html>
