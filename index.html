@@ -155,6 +155,10 @@ function toggleTask(i, div) {
 }
 
 /* ===== SUBMIT DATA (FINAL & WORKING) ===== */
+<script>
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeO_raRP0rf6FEwKcOSp5IOa9lhOq6IxwZuH9VK8Lp4uAqm_g/formResponse";
+const PAYLOAD_ENTRY = "entry.6677672";
+
 function submitData() {
   const payload = {
     date: new Date().toISOString().split("T")[0],
@@ -167,19 +171,19 @@ function submitData() {
     }))
   };
 
-  const formBody = new URLSearchParams();
-  formBody.append("date", payload.date);
-  formBody.append("day", payload.day);
-  formBody.append("tasks", JSON.stringify(payload.tasks));
+  const formData = new FormData();
+  formData.append(PAYLOAD_ENTRY, JSON.stringify(payload));
 
-  fetch(SCRIPT_URL, {
+  fetch(FORM_URL, {
     method: "POST",
-    body: formBody
+    mode: "no-cors",
+    body: formData
   });
 
   alert("Routine submitted successfully ✅");
 }
 </script>
+
 
 </body>
 </html>
